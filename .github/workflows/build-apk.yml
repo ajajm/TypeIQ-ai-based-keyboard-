@@ -29,7 +29,19 @@ jobs:
           gradle-version: '8.11.1'
 
       - name: Build Debug APK
-        run: gradle :app:assembleDebug --stacktrace --no-daemon
+        run: |
+          gradle :app:assembleDebug --stacktrace --no-daemon 2>&1 | tee /tmp/gradle_build.log
+
+      - name: Save Log on Failure
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B build-failure-log
+          tail -n 300 /tmp/gradle_build.log > GRADLE_ERROR.txt
+          git add GRADLE_ERROR.txt
+          git commit -m "ci: log build failure details"
+          git push -f origin build-failure-log
 
       - name: Locate and Package APK
         run: |
@@ -42,7 +54,6 @@ jobs:
             cp "$APK_FILE" release-output/TypeIQ-v1.0.0-debug.apk
           else
             echo "Error: No APK file found!"
-            find . -type d -name "outputs"
             exit 1
           fi
 
