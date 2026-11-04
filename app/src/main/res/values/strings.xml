@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TypeIQ</string>
+    <string name="setup_title">Set Up TypeIQ</string>
+    <string name="setup_step1_title">Enable the Keyboard</string>
+    <string name="setup_step1_desc">Tap the button below to open system keyboard settings and enable \"TypeIQ\".</string>
+    <string name="setup_step1_button">Open Keyboard Settings</string>
+    <string name="setup_step2_title">Select as Default</string>
+    <string name="setup_step2_desc">Now choose \"TypeIQ\" as your current default input method.</string>
+    <string name="setup_step2_button">Choose Keyboard</string>
+    <string name="setup_step3_title">Ready to Personalize</string>
+    <string name="setup_step3_desc">TypeIQ is active! Complete a quick onboarding to adapt the AI to your typing style.</string>
+    <string name="setup_complete_button">Personalize Now</string>
+</resources>
+
