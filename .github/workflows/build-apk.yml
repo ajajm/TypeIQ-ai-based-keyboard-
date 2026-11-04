@@ -29,20 +29,22 @@ jobs:
           gradle-version: '8.11.1'
 
       - name: Build Debug APK
-        run: gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee build_output.log
+        run: gradle :app:assembleDebug --stacktrace --no-daemon
 
-      - name: Show failure log on error
-        if: failure()
-        run: |
-          echo "=== BUILD LOG FAILURE TAIL ==="
-          tail -n 150 build_output.log || true
-
-      - name: Rename APK
+      - name: Locate and Package APK
         run: |
           mkdir -p release-output
-          APK_FILE=$(find app/build/outputs/apk -type f -name "*.apk" | head -n 1)
-          echo "Found APK at: $APK_FILE"
-          cp "$APK_FILE" release-output/TypeIQ-v1.0.0-debug.apk
+          echo "=== SEARCHING FOR APK ==="
+          find . -name "*.apk"
+          APK_FILE=$(find . -type f -name "*.apk" | head -n 1)
+          if [ -n "$APK_FILE" ]; then
+            echo "Found APK at: $APK_FILE"
+            cp "$APK_FILE" release-output/TypeIQ-v1.0.0-debug.apk
+          else
+            echo "Error: No APK file found!"
+            find . -type d -name "outputs"
+            exit 1
+          fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
