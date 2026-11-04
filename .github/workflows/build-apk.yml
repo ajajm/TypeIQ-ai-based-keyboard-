@@ -1,0 +1,67 @@
+name: Build TypeIQ APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Package Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Build Debug APK
+        run: gradle assembleDebug --stacktrace
+
+      - name: Rename APK
+        run: |
+          mkdir -p release-output
+          cp app/build/outputs/apk/debug/app-debug.apk release-output/TypeIQ-v1.0.0-debug.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TypeIQ-debug-apk
+          path: release-output/TypeIQ-v1.0.0-debug.apk
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-preview
+          name: "TypeIQ v1.0.0 (Debug APK)"
+          prerelease: true
+          body: |
+            ### 🚀 TypeIQ On-Device AI Keyboard
+            
+            Download and install the APK directly onto your Android device (Android 8.0+ / API 26+).
+            
+            #### 📱 Installation Steps:
+            1. Tap `TypeIQ-v1.0.0-debug.apk` below on your phone.
+            2. When prompted, allow "Install from this source" for your browser / file manager.
+            3. Tap **Install** and open **TypeIQ**.
+            4. Follow the in-app setup guide to enable TypeIQ in keyboard settings and choose it as your default keyboard.
+          files: release-output/TypeIQ-v1.0.0-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
