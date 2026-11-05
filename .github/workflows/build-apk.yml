@@ -48,21 +48,13 @@ jobs:
       - name: Locate and Package APK
         run: |
           mkdir -p release-output
-          find app/build -type f > /tmp/build_tree.txt || true
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B debug-tree
-          cp /tmp/build_tree.txt BUILD_TREE.txt
-          git add BUILD_TREE.txt
-          git commit -m "debug: inspect build output files" || true
-          git push -f origin debug-tree || true
-
-          APK_FILE=$(find . -type f -name "*.apk" | head -n 1)
+          APK_FILE=$(find app/build/outputs/apk -type f -name "*.apk" | head -n 1)
           if [ -n "$APK_FILE" ]; then
             echo "Found APK at: $APK_FILE"
             cp "$APK_FILE" release-output/TypeIQ-v1.0.0-debug.apk
           else
-            echo "Error: No APK file found!"
+            echo "Error: No APK file found in app/build/outputs/apk!"
+            find . -name "*.apk"
             exit 1
           fi
 
